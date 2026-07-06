@@ -1,23 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 
-import { colors } from '@/theme';
+import { TransactionForm } from '@/features/transactions/TransactionForm';
+import { createTransaction, type TransactionInput } from '@/features/transactions/queries';
 
 export default function NewTransactionScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.placeholder}>거래 입력 폼이 여기에 표시됩니다.</Text>
-    </View>
-  );
-}
+  const handleSubmit = async (input: TransactionInput) => {
+    await createTransaction(input);
+    router.back();
+  };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.card,
-  },
-  placeholder: {
-    color: colors.textSub,
-  },
-});
+  return <TransactionForm onSubmit={handleSubmit} />;
+}
