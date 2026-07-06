@@ -2,6 +2,7 @@ import { and, desc, eq, gte, isNull, lte } from 'drizzle-orm';
 
 import { getDb } from '@/db/client';
 import { accounts, categories, transactions, type TransactionType } from '@/db/schema';
+import { getCurrentLedgerId } from '@/features/ledgers/current';
 import { monthRange, nowISO } from '@/lib/dates';
 import { newId } from '@/lib/id';
 
@@ -29,6 +30,7 @@ export function monthTransactionsQuery(monthKey: string) {
     .leftJoin(accounts, eq(transactions.accountId, accounts.id))
     .where(
       and(
+        eq(transactions.ledgerId, getCurrentLedgerId()),
         isNull(transactions.deletedAt),
         gte(transactions.occurredOn, start),
         lte(transactions.occurredOn, end),
@@ -48,6 +50,7 @@ export async function createTransaction(input: TransactionInput): Promise<string
   const ts = nowISO();
   await getDb().insert(transactions).values({
     id,
+    ledgerId: getCurrentLedgerId(),
     ...input,
     memo: input.memo?.trim() || null,
     createdAt: ts,

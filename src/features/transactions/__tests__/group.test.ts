@@ -4,6 +4,7 @@ function row(occurredOn: string, type: 'income' | 'expense' | 'transfer', amount
   return {
     tx: {
       id: `${occurredOn}-${type}-${amount}`,
+      ledgerId: 'ledger-1',
       userId: null,
       createdAt: '2026-07-01T00:00:00.000Z',
       updatedAt: '2026-07-01T00:00:00.000Z',

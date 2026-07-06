@@ -2,6 +2,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
+import { loadCurrentLedger } from '@/features/ledgers/current';
 import { colors } from '@/theme';
 
 import { initDb, type DB } from './client';
@@ -32,6 +33,7 @@ function Migrator({ db, children }: { db: DB; children: ReactNode }) {
   useEffect(() => {
     if (!success) return;
     seedIfEmpty(db)
+      .then(() => loadCurrentLedger(db))
       .then(() => setSeeded(true))
       .catch((e) => setSeedError(e instanceof Error ? e : new Error(String(e))));
   }, [success, db]);

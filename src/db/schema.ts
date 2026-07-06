@@ -16,8 +16,24 @@ const syncColumns = {
   dirty: integer('dirty').notNull().default(1),
 };
 
+/**
+ * 가계부(장부). 데이터 소유의 기본 단위 — 혼자 쓰면 멤버 1명,
+ * 부부가 쓰면 멤버 2명이 같은 ledger를 공유한다.
+ */
+export const ledgers = sqliteTable('ledgers', {
+  ...syncColumns,
+  name: text('name').notNull(),
+});
+
+export const ledgerMembers = sqliteTable('ledger_members', {
+  ...syncColumns,
+  ledgerId: text('ledger_id').notNull(),
+  role: text('role', { enum: ['owner', 'member'] }).notNull().default('member'),
+});
+
 export const accounts = sqliteTable('accounts', {
   ...syncColumns,
+  ledgerId: text('ledger_id').notNull(),
   name: text('name').notNull(),
   type: text('type', { enum: ['cash', 'card', 'bank'] }).notNull(),
   color: text('color').notNull(),
@@ -26,6 +42,7 @@ export const accounts = sqliteTable('accounts', {
 
 export const categories = sqliteTable('categories', {
   ...syncColumns,
+  ledgerId: text('ledger_id').notNull(),
   name: text('name').notNull(),
   type: text('type', { enum: ['income', 'expense'] }).notNull(),
   icon: text('icon').notNull(),
@@ -37,6 +54,7 @@ export const transactions = sqliteTable(
   'transactions',
   {
     ...syncColumns,
+    ledgerId: text('ledger_id').notNull(),
     type: text('type', { enum: ['income', 'expense', 'transfer'] }).notNull(),
     /** 원 단위 정수 (부동소수점 금지) */
     amount: integer('amount').notNull(),
@@ -60,6 +78,7 @@ export const budgets = sqliteTable(
   'budgets',
   {
     ...syncColumns,
+    ledgerId: text('ledger_id').notNull(),
     /** YYYY-MM */
     month: text('month').notNull(),
     categoryId: text('category_id').notNull(),
@@ -68,6 +87,8 @@ export const budgets = sqliteTable(
   (t) => [index('idx_budgets_month').on(t.month)],
 );
 
+export type Ledger = typeof ledgers.$inferSelect;
+export type LedgerMember = typeof ledgerMembers.$inferSelect;
 export type Account = typeof accounts.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;

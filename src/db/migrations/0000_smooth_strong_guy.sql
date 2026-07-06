@@ -5,6 +5,7 @@ CREATE TABLE `accounts` (
 	`updated_at` text NOT NULL,
 	`deleted_at` text,
 	`dirty` integer DEFAULT 1 NOT NULL,
+	`ledger_id` text NOT NULL,
 	`name` text NOT NULL,
 	`type` text NOT NULL,
 	`color` text NOT NULL,
@@ -18,6 +19,7 @@ CREATE TABLE `budgets` (
 	`updated_at` text NOT NULL,
 	`deleted_at` text,
 	`dirty` integer DEFAULT 1 NOT NULL,
+	`ledger_id` text NOT NULL,
 	`month` text NOT NULL,
 	`category_id` text NOT NULL,
 	`amount` integer NOT NULL
@@ -31,11 +33,33 @@ CREATE TABLE `categories` (
 	`updated_at` text NOT NULL,
 	`deleted_at` text,
 	`dirty` integer DEFAULT 1 NOT NULL,
+	`ledger_id` text NOT NULL,
 	`name` text NOT NULL,
 	`type` text NOT NULL,
 	`icon` text NOT NULL,
 	`color` text NOT NULL,
 	`sort_order` integer DEFAULT 0 NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `ledger_members` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL,
+	`deleted_at` text,
+	`dirty` integer DEFAULT 1 NOT NULL,
+	`ledger_id` text NOT NULL,
+	`role` text DEFAULT 'member' NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `ledgers` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL,
+	`deleted_at` text,
+	`dirty` integer DEFAULT 1 NOT NULL,
+	`name` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `transactions` (
@@ -45,6 +69,7 @@ CREATE TABLE `transactions` (
 	`updated_at` text NOT NULL,
 	`deleted_at` text,
 	`dirty` integer DEFAULT 1 NOT NULL,
+	`ledger_id` text NOT NULL,
 	`type` text NOT NULL,
 	`amount` integer NOT NULL,
 	`category_id` text,
