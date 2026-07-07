@@ -24,6 +24,12 @@ export default function RootLayout() {
               name="goal/edit"
               options={{ presentation: 'modal', title: '이번 달 목표' }}
             />
+            <Stack.Screen name="accounts/index" options={{ title: '자산 관리' }} />
+            <Stack.Screen
+              name="accounts/new"
+              options={{ presentation: 'modal', title: '자산 추가' }}
+            />
+            <Stack.Screen name="accounts/[id]" options={{ title: '자산 수정' }} />
           </Stack>
         </DatabaseProvider>
       </QueryClientProvider>
