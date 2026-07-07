@@ -16,7 +16,7 @@ interface MenuItem {
 const MENU: MenuItem[] = [
   { icon: 'wallet', label: '자산 관리', href: '/accounts' },
   { icon: 'pricetags', label: '카테고리 관리', note: '준비 중' },
-  { icon: 'people', label: '부부 가계부 초대', note: '준비 중' },
+  { icon: 'people', label: '부부 가계부', href: '/share' },
 ];
 
 export default function SettingsScreen() {

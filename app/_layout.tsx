@@ -38,6 +38,7 @@ export default function RootLayout() {
               name="(auth)/sign-in"
               options={{ presentation: 'modal', title: '로그인' }}
             />
+            <Stack.Screen name="share" options={{ title: '부부 가계부' }} />
           </Stack>
         </SyncProvider>
         </DatabaseProvider>

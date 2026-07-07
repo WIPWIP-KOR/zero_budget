@@ -31,6 +31,14 @@ export interface SyncResult {
 let running = false;
 
 /**
+ * pull 커서를 초기화한다. 장부 합류처럼 멤버십이 바뀌면
+ * 커서보다 오래된 상대 데이터도 받아야 하므로 전체 재-pull이 필요하다.
+ */
+export async function resetSyncCursors(): Promise<void> {
+  await getDb().delete(syncState);
+}
+
+/**
  * 전체 동기화 1회: 로컬 데이터를 계정에 연결 → 테이블별 push → pull.
  * 미설정/미로그인이면 조용히 건너뛴다.
  */
