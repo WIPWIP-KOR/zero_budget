@@ -87,7 +87,7 @@ export default function SignInScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>제로가계부</Text>
+      <Text style={styles.title}>영원가계부</Text>
       <Text style={styles.sub}>로그인하면 부부 공유와 기기 간 동기화를 사용할 수 있어요</Text>
 
       <Pressable style={styles.kakaoButton} onPress={handleKakao} disabled={busy}>

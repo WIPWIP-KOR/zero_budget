@@ -90,7 +90,7 @@ export default function ShareScreen() {
             <Text style={styles.code}>{inviteCode}</Text>
             <Pressable
               style={styles.primaryButton}
-              onPress={() => void Share.share({ message: `제로가계부 초대 코드: ${inviteCode}` })}
+              onPress={() => void Share.share({ message: `영원가계부 초대 코드: ${inviteCode}` })}
             >
               <Text style={styles.primaryLabel}>코드 공유하기</Text>
             </Pressable>

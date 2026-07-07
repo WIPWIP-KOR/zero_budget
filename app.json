@@ -1,16 +1,18 @@
 {
   "expo": {
-    "name": "제로가계부",
+    "name": "영원가계부",
     "slug": "zero_budget",
     "version": "1.0.0",
     "scheme": "zerobudget",
+    "ios": {
+      "bundleIdentifier": "com.yeongwon.app",
+      "supportsTablet": true
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "package": "com.yeongwon.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
