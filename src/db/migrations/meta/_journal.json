@@ -15,6 +15,13 @@
       "when": 1783383313142,
       "tag": "0001_harsh_dagger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1783384168138,
+      "tag": "0002_far_lord_tyger",
+      "breakpoints": true
     }
   ]
 }

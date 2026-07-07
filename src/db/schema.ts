@@ -101,6 +101,12 @@ export const budgets = sqliteTable(
   (t) => [index('idx_budgets_month').on(t.month)],
 );
 
+/** 로컬 전용 — 테이블별 pull 커서. 서버에는 존재하지 않는다. */
+export const syncState = sqliteTable('sync_state', {
+  tableName: text('table_name').primaryKey(),
+  lastPulledAt: text('last_pulled_at').notNull(),
+});
+
 export type Goal = typeof goals.$inferSelect;
 export type Ledger = typeof ledgers.$inferSelect;
 export type LedgerMember = typeof ledgerMembers.$inferSelect;

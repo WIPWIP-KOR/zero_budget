@@ -3,6 +3,7 @@ import { Link, type Href } from 'expo-router';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { signOut, useSession } from '@/features/auth/AuthProvider';
+import { useSync } from '@/sync/SyncProvider';
 import { colors, radius, spacing } from '@/theme';
 
 interface MenuItem {
@@ -20,24 +21,38 @@ const MENU: MenuItem[] = [
 
 export default function SettingsScreen() {
   const { session } = useSession();
+  const { syncing, lastSyncedAt, error, sync } = useSync();
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         {session ? (
-          <Pressable
-            style={styles.row}
-            onPress={() =>
-              Alert.alert('로그아웃', '로그아웃할까요? 데이터는 이 기기에 남아있어요.', [
-                { text: '취소', style: 'cancel' },
-                { text: '로그아웃', style: 'destructive', onPress: () => void signOut() },
-              ])
-            }
-          >
-            <Ionicons name="person-circle" size={20} color={colors.primary} />
-            <Text style={styles.label}>{session.user.email ?? '로그인됨'}</Text>
-            <Text style={styles.note}>로그아웃</Text>
-          </Pressable>
+          <>
+            <Pressable
+              style={styles.row}
+              onPress={() =>
+                Alert.alert('로그아웃', '로그아웃할까요? 데이터는 이 기기에 남아있어요.', [
+                  { text: '취소', style: 'cancel' },
+                  { text: '로그아웃', style: 'destructive', onPress: () => void signOut() },
+                ])
+              }
+            >
+              <Ionicons name="person-circle" size={20} color={colors.primary} />
+              <Text style={styles.label}>{session.user.email ?? '로그인됨'}</Text>
+              <Text style={styles.note}>로그아웃</Text>
+            </Pressable>
+            <Pressable style={styles.row} onPress={() => void sync()} disabled={syncing}>
+              <Ionicons name="sync" size={20} color={colors.primary} />
+              <Text style={styles.label}>{syncing ? '동기화 중…' : '지금 동기화'}</Text>
+              <Text style={styles.note}>
+                {error
+                  ? '실패'
+                  : lastSyncedAt
+                    ? new Date(lastSyncedAt).toLocaleTimeString()
+                    : ''}
+              </Text>
+            </Pressable>
+          </>
         ) : (
           <Link href="/sign-in" asChild>
             <Pressable style={styles.row}>
