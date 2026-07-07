@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, type Href } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { signOut, useSession } from '@/features/auth/AuthProvider';
 import { colors, radius, spacing } from '@/theme';
 
 interface MenuItem {
@@ -14,13 +15,41 @@ interface MenuItem {
 const MENU: MenuItem[] = [
   { icon: 'wallet', label: '자산 관리', href: '/accounts' },
   { icon: 'pricetags', label: '카테고리 관리', note: '준비 중' },
-  { icon: 'person-circle', label: '계정 · 동기화', note: '준비 중' },
   { icon: 'people', label: '부부 가계부 초대', note: '준비 중' },
 ];
 
 export default function SettingsScreen() {
+  const { session } = useSession();
+
   return (
     <View style={styles.container}>
+      <View style={styles.card}>
+        {session ? (
+          <Pressable
+            style={styles.row}
+            onPress={() =>
+              Alert.alert('로그아웃', '로그아웃할까요? 데이터는 이 기기에 남아있어요.', [
+                { text: '취소', style: 'cancel' },
+                { text: '로그아웃', style: 'destructive', onPress: () => void signOut() },
+              ])
+            }
+          >
+            <Ionicons name="person-circle" size={20} color={colors.primary} />
+            <Text style={styles.label}>{session.user.email ?? '로그인됨'}</Text>
+            <Text style={styles.note}>로그아웃</Text>
+          </Pressable>
+        ) : (
+          <Link href="/sign-in" asChild>
+            <Pressable style={styles.row}>
+              <Ionicons name="person-circle" size={20} color={colors.primary} />
+              <Text style={styles.label}>로그인 · 동기화</Text>
+              <Text style={styles.note}>로컬 모드</Text>
+              <Ionicons name="chevron-forward" size={16} color={colors.textFaint} />
+            </Pressable>
+          </Link>
+        )}
+      </View>
+
       <View style={styles.card}>
         {MENU.map((item) => {
           const row = (
@@ -53,6 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
     padding: spacing.md,
+    gap: spacing.md,
   },
   card: {
     backgroundColor: colors.card,

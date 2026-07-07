@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '@/db/DatabaseProvider';
+import { AuthProvider } from '@/features/auth/AuthProvider';
 
 const queryClient = new QueryClient();
 
@@ -11,6 +12,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
+        <AuthProvider>
         <DatabaseProvider>
           <StatusBar style="dark" />
           <Stack>
@@ -30,8 +32,13 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '자산 추가' }}
             />
             <Stack.Screen name="accounts/[id]" options={{ title: '자산 수정' }} />
+            <Stack.Screen
+              name="(auth)/sign-in"
+              options={{ presentation: 'modal', title: '로그인' }}
+            />
           </Stack>
         </DatabaseProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
