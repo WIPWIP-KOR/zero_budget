@@ -20,6 +20,10 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '거래 입력' }}
             />
             <Stack.Screen name="transaction/[id]" options={{ title: '거래 상세' }} />
+            <Stack.Screen
+              name="goal/edit"
+              options={{ presentation: 'modal', title: '이번 달 목표' }}
+            />
           </Stack>
         </DatabaseProvider>
       </QueryClientProvider>

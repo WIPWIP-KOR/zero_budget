@@ -73,6 +73,20 @@ export const transactions = sqliteTable(
   ],
 );
 
+/** 월 목표 — MVP는 저축 목표액. 연간 목표로 확장 예정 */
+export const goals = sqliteTable(
+  'goals',
+  {
+    ...syncColumns,
+    ledgerId: text('ledger_id').notNull(),
+    /** YYYY-MM */
+    month: text('month').notNull(),
+    /** 이번 달 저축 목표액 (원) */
+    savingTarget: integer('saving_target').notNull(),
+  },
+  (t) => [index('idx_goals_month').on(t.month)],
+);
+
 /** 2단계(제로베이스 예산)용 — 스키마만 예약 */
 export const budgets = sqliteTable(
   'budgets',
@@ -87,6 +101,7 @@ export const budgets = sqliteTable(
   (t) => [index('idx_budgets_month').on(t.month)],
 );
 
+export type Goal = typeof goals.$inferSelect;
 export type Ledger = typeof ledgers.$inferSelect;
 export type LedgerMember = typeof ledgerMembers.$inferSelect;
 export type Account = typeof accounts.$inferSelect;
