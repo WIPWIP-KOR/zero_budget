@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { CalendarView } from '@/features/transactions/CalendarView';
 import { groupByDate } from '@/features/transactions/group';
 import { monthTransactionsQuery } from '@/features/transactions/queries';
 import { TransactionListItem } from '@/features/transactions/TransactionListItem';
@@ -14,13 +15,31 @@ import { colors, spacing } from '@/theme';
 
 export default function HistoryScreen() {
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
+  const [view, setView] = useState<'list' | 'calendar'>('list');
   const { data } = useLiveQuery(monthTransactionsQuery(month), [month]);
 
   const sections = useMemo(() => groupByDate(data ?? []), [data]);
 
   return (
     <View style={styles.container}>
-      <MonthSwitcher month={month} onChange={setMonth} />
+      <View style={styles.header}>
+        <MonthSwitcher month={month} onChange={setMonth} />
+        <Pressable
+          testID="view-toggle"
+          hitSlop={8}
+          style={styles.viewToggle}
+          onPress={() => setView(view === 'list' ? 'calendar' : 'list')}
+        >
+          <Ionicons
+            name={view === 'list' ? 'calendar-outline' : 'list-outline'}
+            size={20}
+            color={colors.textSub}
+          />
+        </Pressable>
+      </View>
+      {view === 'calendar' ? (
+        <CalendarView month={month} rows={data ?? []} />
+      ) : (
       <SectionList
         sections={sections}
         keyExtractor={(row) => row.tx.id}
@@ -50,6 +69,7 @@ export default function HistoryScreen() {
         stickySectionHeadersEnabled={false}
         contentContainerStyle={sections.length === 0 ? { flex: 1 } : undefined}
       />
+      )}
       <Link href="/transaction/new" asChild>
         <Pressable style={styles.fab}>
           <Ionicons name="add" size={28} color="#fff" />
@@ -63,6 +83,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  header: {
+    backgroundColor: colors.card,
+  },
+  viewToggle: {
+    position: 'absolute',
+    right: spacing.md,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
   sectionHeader: {
     flexDirection: 'row',
