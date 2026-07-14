@@ -159,3 +159,5 @@ export type AccountType = Account['type'];
 export type LedgerKind = Ledger['kind'];
 export type GoalKind = Goal['kind'];
 export type TransactionStatus = Transaction['status'];
+export type Frequency = RecurringRule['frequency'];
+export type RecurringType = RecurringRule['type'];

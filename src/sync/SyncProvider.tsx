@@ -10,6 +10,7 @@ import {
 import { AppState } from 'react-native';
 
 import { useSession } from '@/features/auth/AuthProvider';
+import { generateDueTransactions } from '@/features/recurring/generate';
 import { nowISO } from '@/lib/dates';
 
 import { syncNow } from './engine';
@@ -65,6 +66,15 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     });
     return () => sub.remove();
   }, [userId, sync]);
+
+  // 반복/고정 거래 생성 — 로그인 여부와 무관하게 앱 실행/포그라운드 복귀 시마다
+  useEffect(() => {
+    void generateDueTransactions();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void generateDueTransactions();
+    });
+    return () => sub.remove();
+  }, []);
 
   return (
     <SyncContext.Provider value={{ syncing, lastSyncedAt, error, sync }}>

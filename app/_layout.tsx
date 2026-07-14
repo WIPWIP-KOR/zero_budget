@@ -48,6 +48,12 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '카테고리 추가' }}
             />
             <Stack.Screen name="category/[id]" options={{ title: '카테고리 수정' }} />
+            <Stack.Screen name="recurring/index" options={{ title: '반복 거래' }} />
+            <Stack.Screen
+              name="recurring/new"
+              options={{ presentation: 'modal', title: '반복 거래 추가' }}
+            />
+            <Stack.Screen name="recurring/[id]" options={{ title: '반복 거래 수정' }} />
             <Stack.Screen
               name="(auth)/sign-in"
               options={{ presentation: 'modal', title: '로그인' }}

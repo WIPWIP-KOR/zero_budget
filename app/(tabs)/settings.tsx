@@ -16,6 +16,7 @@ interface MenuItem {
 const MENU: MenuItem[] = [
   { icon: 'wallet', label: '자산 관리', href: '/accounts' },
   { icon: 'pricetags', label: '카테고리 관리', href: '/category' },
+  { icon: 'repeat', label: '반복 거래', href: '/recurring' },
   { icon: 'people', label: '부부 가계부', href: '/share' },
   { icon: 'people-circle', label: '파티', href: '/party' },
 ];
