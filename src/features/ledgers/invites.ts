@@ -15,10 +15,11 @@ export function generateInviteCode(): string {
 }
 
 /**
- * 현재 장부의 초대 코드를 만든다 (24시간 유효).
- * 서버 RLS가 멤버십을 검사하므로, 호출 전에 내 장부가 push되어 있어야 한다.
+ * 장부의 초대 코드를 만든다 (24시간 유효). 파티(§3.3b)처럼 현재 장부가 아닌
+ * 새로 만든 장부의 코드를 발급할 때는 ledgerId를 명시한다.
+ * 서버 RLS가 멤버십을 검사하므로, 호출 전에 해당 장부가 push되어 있어야 한다.
  */
-export async function createInviteCode(): Promise<string> {
+export async function createInviteCode(ledgerId: string = getCurrentLedgerId()): Promise<string> {
   const supabase = getSupabase();
   const { data: sessionData } = await supabase.auth.getSession();
   const userId = sessionData.session?.user.id;
@@ -26,7 +27,7 @@ export async function createInviteCode(): Promise<string> {
 
   const code = generateInviteCode();
   const { error } = await supabase.from('ledger_invites').insert({
-    ledger_id: getCurrentLedgerId(),
+    ledger_id: ledgerId,
     code,
     created_by: userId,
   });

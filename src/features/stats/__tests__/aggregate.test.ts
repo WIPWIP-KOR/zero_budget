@@ -24,6 +24,10 @@ function row(
       toAccountId: null,
       memo: null,
       occurredOn,
+      status: 'sorted',
+      photoUrl: null,
+      videoUrl: null,
+      rawComment: null,
     },
     category: category
       ? {

@@ -7,10 +7,15 @@ import { nowISO } from '@/lib/dates';
 import { newId } from '@/lib/id';
 
 export function accountsQuery() {
+  return accountsByLedgerQuery(getCurrentLedgerId());
+}
+
+/** 정리 화면처럼 현재 장부가 아닌 다른(배정 대상) 장부의 자산을 조회할 때 사용 */
+export function accountsByLedgerQuery(ledgerId: string) {
   return getDb()
     .select()
     .from(accounts)
-    .where(and(eq(accounts.ledgerId, getCurrentLedgerId()), isNull(accounts.deletedAt)))
+    .where(and(eq(accounts.ledgerId, ledgerId), isNull(accounts.deletedAt)))
     .orderBy(asc(accounts.sortOrder));
 }
 

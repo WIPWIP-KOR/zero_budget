@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 
 import { getDb } from '@/db/client';
-import { goals } from '@/db/schema';
+import { goals, type GoalKind } from '@/db/schema';
 import { getCurrentLedgerId } from '@/features/ledgers/current';
 import { nowISO } from '@/lib/dates';
 import { newId } from '@/lib/id';
@@ -20,8 +20,12 @@ export function goalQuery(month: string) {
     .limit(1);
 }
 
-/** 해당 월의 저축 목표를 만들거나 갱신한다. */
-export async function upsertGoal(month: string, savingTarget: number): Promise<void> {
+/** 해당 월의 저축/지출 상한 목표를 만들거나 갱신한다. kind는 새로 만들 때만 반영된다 */
+export async function upsertGoal(
+  month: string,
+  savingTarget: number,
+  kind: GoalKind = 'saving',
+): Promise<void> {
   const db = getDb();
   const ts = nowISO();
   const existing = await goalQuery(month);
@@ -39,6 +43,7 @@ export async function upsertGoal(month: string, savingTarget: number): Promise<v
     ledgerId: getCurrentLedgerId(),
     month,
     savingTarget,
+    kind,
     createdAt: ts,
     updatedAt: ts,
   });

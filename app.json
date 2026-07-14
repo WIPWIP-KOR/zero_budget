@@ -29,7 +29,21 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "결제 사진을 캡처에 첨부하려면 사진 접근 권한이 필요해요.",
+          "cameraPermission": "결제 직후 바로 촬영하려면 카메라 접근 권한이 필요해요.",
+          "microphonePermission": "짧은 영상을 촬영하려면 마이크 접근 권한이 필요해요."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png"
+        }
+      ]
     ]
   }
 }

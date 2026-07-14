@@ -10,8 +10,9 @@ import { MomentCard, PostCard } from '@/features/feed/FeedCards';
 import { buildLocalMoments } from '@/features/feed/moments';
 import { fetchPublicPosts } from '@/features/feed/posts';
 import { GoalCard } from '@/features/goals/GoalCard';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { sumMonth } from '@/features/transactions/group';
-import { monthTransactionsQuery } from '@/features/transactions/queries';
+import { monthTransactionsQuery, unsortedTransactionsQuery } from '@/features/transactions/queries';
 import { toDateKey, toMonthKey } from '@/lib/dates';
 import { formatKRW } from '@/lib/format';
 import { isSupabaseConfigured } from '@/lib/supabase';
@@ -20,7 +21,10 @@ import { colors, radius, spacing } from '@/theme';
 export default function HomeScreen() {
   const month = toMonthKey(new Date());
   const { session } = useSession();
-  const { data } = useLiveQuery(monthTransactionsQuery(month), [month]);
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(monthTransactionsQuery(month), [month, currentLedgerId]);
+  const { data: unsorted } = useLiveQuery(unsortedTransactionsQuery(), [currentLedgerId]);
+  const unsortedCount = unsorted?.length ?? 0;
 
   const rows = data ?? [];
   const totals = useMemo(() => sumMonth(rows.map((r) => r.tx)), [rows]);
@@ -57,11 +61,21 @@ export default function HomeScreen() {
         </Text>
       </View>
 
+      {unsortedCount > 0 ? (
+        <Link href="/inbox" asChild>
+          <Pressable style={styles.inboxCard} testID="inbox-card">
+            <Ionicons name="file-tray-full" size={20} color={colors.primary} />
+            <Text style={styles.inboxText}>정리할 거래 {unsortedCount}건</Text>
+            <Ionicons name="chevron-forward" size={18} color={colors.textFaint} />
+          </Pressable>
+        </Link>
+      ) : null}
+
       <View style={styles.actionRow}>
-        <Link href="/transaction/new" asChild>
-          <Pressable style={styles.actionButton} testID="quick-add">
+        <Link href="/capture" asChild>
+          <Pressable style={styles.actionButton} testID="quick-capture">
             <Ionicons name="add-circle" size={18} color="#fff" />
-            <Text style={styles.actionLabel}>거래 입력</Text>
+            <Text style={styles.actionLabel}>캡처</Text>
           </Pressable>
         </Link>
         <Link href="/post/new" asChild>
@@ -127,6 +141,22 @@ const styles = StyleSheet.create({
     color: colors.textSub,
     fontSize: 13,
     fontWeight: '600',
+  },
+  inboxCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    padding: spacing.sm,
+  },
+  inboxText: {
+    flex: 1,
+    color: colors.text,
+    fontWeight: '600',
+    fontSize: 14,
   },
   actionRow: {
     flexDirection: 'row',

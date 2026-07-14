@@ -5,6 +5,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { AuthProvider } from '@/features/auth/AuthProvider';
+import { CurrentLedgerProvider } from '@/features/ledgers/CurrentLedgerContext';
+import { NotificationDeepLinkHandler } from '@/features/notifications/DeepLinkHandler';
+import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { SyncProvider } from '@/sync/SyncProvider';
 
 const queryClient = new QueryClient();
@@ -15,10 +18,20 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
         <DatabaseProvider>
+        <CurrentLedgerProvider>
         <SyncProvider>
           <StatusBar style="dark" />
+          <OnboardingGate />
+          <NotificationDeepLinkHandler />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
+            <Stack.Screen
+              name="capture"
+              options={{ presentation: 'modal', title: '캡처' }}
+            />
+            <Stack.Screen name="inbox/index" options={{ title: '수집함' }} />
+            <Stack.Screen name="inbox/[id]" options={{ title: '정리하기' }} />
             <Stack.Screen
               name="transaction/new"
               options={{ presentation: 'modal', title: '거래 입력' }}
@@ -34,17 +47,35 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '자산 추가' }}
             />
             <Stack.Screen name="accounts/[id]" options={{ title: '자산 수정' }} />
+            <Stack.Screen name="category/index" options={{ title: '카테고리 관리' }} />
+            <Stack.Screen
+              name="category/new"
+              options={{ presentation: 'modal', title: '카테고리 추가' }}
+            />
+            <Stack.Screen name="category/[id]" options={{ title: '카테고리 수정' }} />
+            <Stack.Screen name="recurring/index" options={{ title: '반복 거래' }} />
+            <Stack.Screen
+              name="recurring/new"
+              options={{ presentation: 'modal', title: '반복 거래 추가' }}
+            />
+            <Stack.Screen name="recurring/[id]" options={{ title: '반복 거래 수정' }} />
             <Stack.Screen
               name="(auth)/sign-in"
               options={{ presentation: 'modal', title: '로그인' }}
             />
+            <Stack.Screen
+              name="merge-wizard"
+              options={{ presentation: 'modal', title: '장부 병합', gestureEnabled: false }}
+            />
             <Stack.Screen name="share" options={{ title: '부부 가계부' }} />
+            <Stack.Screen name="party/index" options={{ title: '파티' }} />
             <Stack.Screen
               name="post/new"
               options={{ presentation: 'modal', title: '자랑하기' }}
             />
           </Stack>
         </SyncProvider>
+        </CurrentLedgerProvider>
         </DatabaseProvider>
         </AuthProvider>
       </QueryClientProvider>

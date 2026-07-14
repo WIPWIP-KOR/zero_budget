@@ -1,4 +1,4 @@
-import { computeGoalProgress } from '../progress';
+import { computeGoalProgress, computeSpendingCapProgress } from '../progress';
 
 describe('computeGoalProgress', () => {
   test('done when saved >= target', () => {
@@ -36,6 +36,38 @@ describe('computeGoalProgress', () => {
 
   test('zero target does not divide by zero', () => {
     const p = computeGoalProgress(100_000, 0, 0, 5, 30);
+    expect(p.progress).toBe(0);
+  });
+});
+
+describe('computeSpendingCapProgress', () => {
+  test('exceeded when spent reaches the cap', () => {
+    const p = computeSpendingCapProgress(500_000, 500_000, 10, 30);
+    expect(p.status).toBe('exceeded');
+    expect(p.remaining).toBe(0);
+  });
+
+  test('safe when spending is under the elapsed pace', () => {
+    // 지출 10%, 경과 33% → 안전
+    const p = computeSpendingCapProgress(50_000, 500_000, 10, 30);
+    expect(p.status).toBe('safe');
+    expect(p.remaining).toBe(450_000);
+  });
+
+  test('overPace when spending clearly outruns the elapsed pace', () => {
+    // 지출 90%, 경과 33%
+    const p = computeSpendingCapProgress(450_000, 500_000, 10, 30);
+    expect(p.status).toBe('overPace');
+  });
+
+  test('ontrack within tolerance of elapsed pace', () => {
+    // 지출 36%, 경과 33.3%
+    const p = computeSpendingCapProgress(180_000, 500_000, 10, 30);
+    expect(p.status).toBe('ontrack');
+  });
+
+  test('zero cap does not divide by zero', () => {
+    const p = computeSpendingCapProgress(100_000, 0, 5, 30);
     expect(p.progress).toBe(0);
   });
 });

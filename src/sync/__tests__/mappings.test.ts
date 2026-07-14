@@ -3,7 +3,7 @@ import { SYNC_TABLES } from '../mappings';
 const tx = SYNC_TABLES.find((t) => t.remoteName === 'transactions')!;
 
 describe('mappings', () => {
-  test('all seven tables registered in FK order', () => {
+  test('all eight tables registered in FK order', () => {
     expect(SYNC_TABLES.map((t) => t.remoteName)).toEqual([
       'ledgers',
       'ledger_members',
@@ -12,6 +12,7 @@ describe('mappings', () => {
       'transactions',
       'goals',
       'budgets',
+      'recurring_rules',
     ]);
   });
 
@@ -27,6 +28,10 @@ describe('mappings', () => {
       toAccountId: null,
       memo: '점심',
       occurredOn: '2026-07-07',
+      status: 'sorted',
+      photoUrl: null,
+      videoUrl: null,
+      rawComment: null,
       createdAt: '2026-07-07T01:00:00.000Z',
       updatedAt: '2026-07-07T01:00:00.000Z',
       deletedAt: null,
@@ -56,6 +61,10 @@ describe('mappings', () => {
       toAccountId: null,
       memo: null,
       occurredOn: '2026-07-07',
+      status: 'sorted',
+      photoUrl: null,
+      videoUrl: null,
+      rawComment: null,
       createdAt: '2026-07-07T01:00:00.000Z',
       updatedAt: '2026-07-07T01:00:00.000Z',
       deletedAt: null,
