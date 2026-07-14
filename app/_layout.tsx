@@ -42,6 +42,12 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '자산 추가' }}
             />
             <Stack.Screen name="accounts/[id]" options={{ title: '자산 수정' }} />
+            <Stack.Screen name="category/index" options={{ title: '카테고리 관리' }} />
+            <Stack.Screen
+              name="category/new"
+              options={{ presentation: 'modal', title: '카테고리 추가' }}
+            />
+            <Stack.Screen name="category/[id]" options={{ title: '카테고리 수정' }} />
             <Stack.Screen
               name="(auth)/sign-in"
               options={{ presentation: 'modal', title: '로그인' }}
