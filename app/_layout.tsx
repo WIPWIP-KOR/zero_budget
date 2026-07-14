@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { CurrentLedgerProvider } from '@/features/ledgers/CurrentLedgerContext';
+import { NotificationDeepLinkHandler } from '@/features/notifications/DeepLinkHandler';
 import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { SyncProvider } from '@/sync/SyncProvider';
 
@@ -21,6 +22,7 @@ export default function RootLayout() {
         <SyncProvider>
           <StatusBar style="dark" />
           <OnboardingGate />
+          <NotificationDeepLinkHandler />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />

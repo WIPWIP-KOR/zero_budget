@@ -1,8 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, type Href } from 'expo-router';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { signOut, useSession } from '@/features/auth/AuthProvider';
+import {
+  cancelEveningReminder,
+  isEveningReminderScheduled,
+  requestNotificationPermission,
+  scheduleEveningReminder,
+} from '@/features/notifications/reminder';
 import { useSync } from '@/sync/SyncProvider';
 import { colors, radius, spacing } from '@/theme';
 
@@ -24,6 +31,25 @@ const MENU: MenuItem[] = [
 export default function SettingsScreen() {
   const { session } = useSession();
   const { syncing, lastSyncedAt, error, sync } = useSync();
+  const [reminderOn, setReminderOn] = useState(false);
+
+  useEffect(() => {
+    void isEveningReminderScheduled().then(setReminderOn);
+  }, []);
+
+  const handleToggleReminder = async (next: boolean) => {
+    if (next) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert('알림 권한이 필요해요', '설정에서 알림 접근을 허용해주세요.');
+        return;
+      }
+      await scheduleEveningReminder(21, 0);
+    } else {
+      await cancelEveningReminder();
+    }
+    setReminderOn(next);
+  };
 
   return (
     <View style={styles.container}>
@@ -65,6 +91,14 @@ export default function SettingsScreen() {
             </Pressable>
           </Link>
         )}
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Ionicons name="notifications" size={20} color={colors.primary} />
+          <Text style={styles.label}>저녁 리마인더 (오후 9시)</Text>
+          <Switch value={reminderOn} onValueChange={(v) => void handleToggleReminder(v)} />
+        </View>
       </View>
 
       <View style={styles.card}>
