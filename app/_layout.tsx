@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { CurrentLedgerProvider } from '@/features/ledgers/CurrentLedgerContext';
+import { OnboardingGate } from '@/features/onboarding/OnboardingGate';
 import { SyncProvider } from '@/sync/SyncProvider';
 
 const queryClient = new QueryClient();
@@ -19,8 +20,10 @@ export default function RootLayout() {
         <CurrentLedgerProvider>
         <SyncProvider>
           <StatusBar style="dark" />
+          <OnboardingGate />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
             <Stack.Screen
               name="capture"
               options={{ presentation: 'modal', title: '캡처' }}
