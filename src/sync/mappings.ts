@@ -8,6 +8,7 @@ import {
   goals,
   ledgerMembers,
   ledgers,
+  recurringRules,
   transactions,
 } from '@/db/schema';
 
@@ -58,4 +59,5 @@ export const SYNC_TABLES: TableSync[] = [
   makeTableSync('transactions', transactions),
   makeTableSync('goals', goals),
   makeTableSync('budgets', budgets),
+  makeTableSync('recurring_rules', recurringRules),
 ];
