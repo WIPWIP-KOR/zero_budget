@@ -7,9 +7,12 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { router } from 'expo-router';
 import { AppState } from 'react-native';
 
 import { useSession } from '@/features/auth/AuthProvider';
+import { getCurrentLedgerId } from '@/features/ledgers/current';
+import { findLoginMergeCandidate } from '@/features/ledgers/merge';
 import { generateDueTransactions } from '@/features/recurring/generate';
 import { nowISO } from '@/lib/dates';
 
@@ -57,7 +60,19 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const userId = session?.user.id;
 
   useEffect(() => {
-    if (userId) void sync();
+    if (!userId) return;
+    // 로그인 전 장부를 먼저 기록해둬야, sync로 서버 장부가 내려온 뒤 "재로그인/새 기기" 병합
+    // 후보(§5.3)를 판단할 수 있다.
+    const preLoginLedgerId = getCurrentLedgerId();
+    void sync().then(async () => {
+      const candidate = await findLoginMergeCandidate(preLoginLedgerId);
+      if (candidate) {
+        router.push({
+          pathname: '/merge-wizard',
+          params: { source: candidate.source, target: candidate.target },
+        });
+      }
+    });
   }, [userId, sync]);
 
   useEffect(() => {

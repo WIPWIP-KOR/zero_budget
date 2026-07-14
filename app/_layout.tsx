@@ -58,6 +58,10 @@ export default function RootLayout() {
               name="(auth)/sign-in"
               options={{ presentation: 'modal', title: '로그인' }}
             />
+            <Stack.Screen
+              name="merge-wizard"
+              options={{ presentation: 'modal', title: '장부 병합', gestureEnabled: false }}
+            />
             <Stack.Screen name="share" options={{ title: '부부 가계부' }} />
             <Stack.Screen name="party/index" options={{ title: '파티' }} />
             <Stack.Screen
