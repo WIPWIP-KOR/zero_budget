@@ -8,7 +8,7 @@ import { formatMonth } from '@/lib/dates';
 import { formatKRW } from '@/lib/format';
 import { colors, radius, spacing } from '@/theme';
 
-import { computeGoalProgress } from './progress';
+import { computeGoalProgress, computeSpendingCapProgress } from './progress';
 import { goalQuery } from './queries';
 
 interface GoalCardProps {
@@ -42,6 +42,40 @@ export function GoalCard({ month, income, expense }: GoalCardProps) {
 
   const now = new Date();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+  if (goal.kind === 'spending_cap') {
+    const p = computeSpendingCapProgress(expense, goal.savingTarget, now.getDate(), daysInMonth);
+    const statusColor =
+      p.status === 'exceeded' || p.status === 'overPace' ? colors.expense : colors.income;
+
+    return (
+      <Link href="/goal/edit" asChild>
+        <Pressable style={styles.card} testID="goal-card">
+          <View style={styles.headerRow}>
+            <Text style={styles.title}>{formatMonth(month)} 지출 상한</Text>
+            <Text style={[styles.message, { color: statusColor }]}>{p.message}</Text>
+          </View>
+          <View style={styles.amountRow}>
+            <Text style={[styles.saved, { color: statusColor }]}>{formatKRW(p.spent)}</Text>
+            <Text style={styles.target}> / {formatKRW(p.cap)}</Text>
+          </View>
+          <View style={styles.track}>
+            <View
+              style={[
+                styles.fill,
+                { width: `${Math.round(p.progress * 100)}%`, backgroundColor: statusColor },
+              ]}
+            />
+            <View style={[styles.paceMark, { left: `${Math.round(p.expectedProgress * 100)}%` }]} />
+          </View>
+          <Text style={styles.percent}>
+            {p.remaining >= 0 ? `${formatKRW(p.remaining)} 남음` : `${formatKRW(-p.remaining)} 초과`}
+          </Text>
+        </Pressable>
+      </Link>
+    );
+  }
+
   const p = computeGoalProgress(income, expense, goal.savingTarget, now.getDate(), daysInMonth);
 
   const statusColor =

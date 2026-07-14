@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 
 import { useSession } from '@/features/auth/AuthProvider';
-import { setCurrentLedgerId } from '@/features/ledgers/current';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { createInviteCode, joinWithCode } from '@/features/ledgers/invites';
+import { ledgersQuery } from '@/features/ledgers/queries';
 import { resetSyncCursors, syncNow } from '@/sync/engine';
 import { colors, radius, spacing } from '@/theme';
 
 export default function ShareScreen() {
   const { session } = useSession();
+  const { switchLedger } = useCurrentLedger();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [joinInput, setJoinInput] = useState('');
   const [busy, setBusy] = useState<'invite' | 'join' | null>(null);
@@ -66,11 +68,17 @@ export default function ShareScreen() {
     setBusy('join');
     try {
       const ledgerId = await joinWithCode(joinInput);
-      // 과거 데이터까지 전부 받도록 커서를 리셋하고 동기화
+      // 과거 데이터까지 전부 받도록 커서를 리셋하고 동기화 — 합류한 장부가 로컬에 내려온다
       await resetSyncCursors();
       await syncNow();
-      await setCurrentLedgerId(ledgerId);
-      Alert.alert('합류 완료', '이제 부부 가계부를 함께 써요! 🎉');
+      // main(부부)만 전환한다. party는 목록에만 추가되고 현재 장부는 그대로 (§3.3b)
+      const joined = (await ledgersQuery()).find((l) => l.id === ledgerId);
+      if (joined?.kind === 'party') {
+        Alert.alert('합류 완료', `"${joined.name}" 파티에 합류했어요. 장부 목록에서 확인하세요.`);
+      } else {
+        await switchLedger(ledgerId);
+        Alert.alert('합류 완료', '이제 부부 가계부를 함께 써요! 🎉');
+      }
     } catch (e) {
       Alert.alert('합류 실패', e instanceof Error ? e.message : String(e));
     } finally {

@@ -47,6 +47,7 @@ export default function RootLayout() {
               options={{ presentation: 'modal', title: '로그인' }}
             />
             <Stack.Screen name="share" options={{ title: '부부 가계부' }} />
+            <Stack.Screen name="party/index" options={{ title: '파티' }} />
             <Stack.Screen
               name="post/new"
               options={{ presentation: 'modal', title: '자랑하기' }}

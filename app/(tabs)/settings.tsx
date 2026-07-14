@@ -17,6 +17,7 @@ const MENU: MenuItem[] = [
   { icon: 'wallet', label: '자산 관리', href: '/accounts' },
   { icon: 'pricetags', label: '카테고리 관리', note: '준비 중' },
   { icon: 'people', label: '부부 가계부', href: '/share' },
+  { icon: 'people-circle', label: '파티', href: '/party' },
 ];
 
 export default function SettingsScreen() {

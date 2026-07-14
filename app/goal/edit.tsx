@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
+import { ledgersQuery } from '@/features/ledgers/queries';
 import { goalQuery, upsertGoal } from '@/features/goals/queries';
 import { formatMonth, toMonthKey } from '@/lib/dates';
 import { formatAmount } from '@/lib/format';
@@ -10,8 +12,13 @@ import { colors, radius, spacing } from '@/theme';
 
 export default function GoalEditScreen() {
   const month = toMonthKey(new Date());
-  const { data } = useLiveQuery(goalQuery(month));
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(goalQuery(month), [month, currentLedgerId]);
   const existing = data?.[0];
+
+  const { data: allLedgers } = useLiveQuery(ledgersQuery());
+  const currentLedger = allLedgers?.find((l) => l.id === currentLedgerId);
+  const isSpendingCap = existing?.kind === 'spending_cap' || currentLedger?.kind === 'party';
 
   const [digits, setDigits] = useState('');
   useEffect(() => {
@@ -25,14 +32,22 @@ export default function GoalEditScreen() {
       Alert.alert('목표 금액을 입력해주세요');
       return;
     }
-    await upsertGoal(month, amount);
+    await upsertGoal(month, amount, isSpendingCap ? 'spending_cap' : 'saving');
     router.back();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{formatMonth(month)}에 얼마를 모을까요?</Text>
-      <Text style={styles.sub}>수입에서 지출을 뺀 금액이 목표를 향해 쌓여요</Text>
+      <Text style={styles.title}>
+        {isSpendingCap
+          ? `${formatMonth(month)}에 얼마 안에서 끝낼까요?`
+          : `${formatMonth(month)}에 얼마를 모을까요?`}
+      </Text>
+      <Text style={styles.sub}>
+        {isSpendingCap
+          ? '이 장부의 지출 합계가 상한을 넘지 않도록 알려드려요'
+          : '수입에서 지출을 뺀 금액이 목표를 향해 쌓여요'}
+      </Text>
       <View style={styles.amountRow}>
         <TextInput
           style={styles.amountInput}
