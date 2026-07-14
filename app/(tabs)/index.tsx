@@ -10,6 +10,7 @@ import { MomentCard, PostCard } from '@/features/feed/FeedCards';
 import { buildLocalMoments } from '@/features/feed/moments';
 import { fetchPublicPosts } from '@/features/feed/posts';
 import { GoalCard } from '@/features/goals/GoalCard';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { sumMonth } from '@/features/transactions/group';
 import { monthTransactionsQuery, unsortedTransactionsQuery } from '@/features/transactions/queries';
 import { toDateKey, toMonthKey } from '@/lib/dates';
@@ -20,8 +21,9 @@ import { colors, radius, spacing } from '@/theme';
 export default function HomeScreen() {
   const month = toMonthKey(new Date());
   const { session } = useSession();
-  const { data } = useLiveQuery(monthTransactionsQuery(month), [month]);
-  const { data: unsorted } = useLiveQuery(unsortedTransactionsQuery());
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(monthTransactionsQuery(month), [month, currentLedgerId]);
+  const { data: unsorted } = useLiveQuery(unsortedTransactionsQuery(), [currentLedgerId]);
   const unsortedCount = unsorted?.length ?? 0;
 
   const rows = data ?? [];

@@ -4,7 +4,9 @@ import { Link } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
+import { LedgerSwitcher } from '@/components/LedgerSwitcher';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { CalendarView } from '@/features/transactions/CalendarView';
 import { groupByDate } from '@/features/transactions/group';
 import { monthTransactionsQuery } from '@/features/transactions/queries';
@@ -16,13 +18,15 @@ import { colors, spacing } from '@/theme';
 export default function HistoryScreen() {
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
   const [view, setView] = useState<'list' | 'calendar'>('list');
-  const { data } = useLiveQuery(monthTransactionsQuery(month), [month]);
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(monthTransactionsQuery(month), [month, currentLedgerId]);
 
   const sections = useMemo(() => groupByDate(data ?? []), [data]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <LedgerSwitcher />
         <MonthSwitcher month={month} onChange={setMonth} />
         <Pressable
           testID="view-toggle"

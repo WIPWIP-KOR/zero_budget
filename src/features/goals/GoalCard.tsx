@@ -3,6 +3,7 @@ import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { formatMonth } from '@/lib/dates';
 import { formatKRW } from '@/lib/format';
 import { colors, radius, spacing } from '@/theme';
@@ -18,7 +19,8 @@ interface GoalCardProps {
 
 /** 홈 최상단 — 이번 달 목표 진행 카드. 목표가 없으면 설정 유도 CTA. */
 export function GoalCard({ month, income, expense }: GoalCardProps) {
-  const { data } = useLiveQuery(goalQuery(month), [month]);
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(goalQuery(month), [month, currentLedgerId]);
   const goal = data?.[0];
 
   if (!goal) {

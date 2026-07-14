@@ -3,13 +3,15 @@ import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { Link, router } from 'expo-router';
 import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { unsortedTransactionsQuery } from '@/features/transactions/queries';
 import { formatDateLabel } from '@/lib/dates';
 import { formatKRW } from '@/lib/format';
 import { colors, radius, spacing } from '@/theme';
 
 export default function InboxScreen() {
-  const { data } = useLiveQuery(unsortedTransactionsQuery());
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(unsortedTransactionsQuery(), [currentLedgerId]);
   const rows = data ?? [];
 
   return (

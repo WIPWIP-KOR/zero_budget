@@ -5,7 +5,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { PieChart } from 'react-native-gifted-charts';
 
+import { LedgerSwitcher } from '@/components/LedgerSwitcher';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { categoryBreakdown, monthlySeries } from '@/features/stats/aggregate';
 import { rangeTransactionsQuery } from '@/features/stats/queries';
 import { sumMonth } from '@/features/transactions/group';
@@ -19,10 +21,14 @@ const TREND_MONTHS = 6;
 export default function StatsScreen() {
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
   const [type, setType] = useState<'expense' | 'income'>('expense');
+  const { currentLedgerId } = useCurrentLedger();
 
   const trendStart = addMonths(month, -(TREND_MONTHS - 1));
-  const { data: monthRows } = useLiveQuery(monthTransactionsQuery(month), [month]);
-  const { data: rangeRows } = useLiveQuery(rangeTransactionsQuery(trendStart, month), [month]);
+  const { data: monthRows } = useLiveQuery(monthTransactionsQuery(month), [month, currentLedgerId]);
+  const { data: rangeRows } = useLiveQuery(rangeTransactionsQuery(trendStart, month), [
+    month,
+    currentLedgerId,
+  ]);
 
   const totals = useMemo(() => sumMonth((monthRows ?? []).map((r) => r.tx)), [monthRows]);
   const breakdown = useMemo(
@@ -56,6 +62,7 @@ export default function StatsScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <LedgerSwitcher />
       <MonthSwitcher month={month} onChange={setMonth} />
 
       <View style={styles.summaryCard}>

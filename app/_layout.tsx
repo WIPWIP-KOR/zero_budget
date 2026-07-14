@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { DatabaseProvider } from '@/db/DatabaseProvider';
 import { AuthProvider } from '@/features/auth/AuthProvider';
+import { CurrentLedgerProvider } from '@/features/ledgers/CurrentLedgerContext';
 import { SyncProvider } from '@/sync/SyncProvider';
 
 const queryClient = new QueryClient();
@@ -15,6 +16,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
         <DatabaseProvider>
+        <CurrentLedgerProvider>
         <SyncProvider>
           <StatusBar style="dark" />
           <Stack>
@@ -51,6 +53,7 @@ export default function RootLayout() {
             />
           </Stack>
         </SyncProvider>
+        </CurrentLedgerProvider>
         </DatabaseProvider>
         </AuthProvider>
       </QueryClientProvider>

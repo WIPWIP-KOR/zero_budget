@@ -4,6 +4,7 @@ import { Link } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { accountBalancesQuery } from '@/features/accounts/queries';
+import { useCurrentLedger } from '@/features/ledgers/CurrentLedgerContext';
 import { formatKRW } from '@/lib/format';
 import { colors, radius, spacing } from '@/theme';
 
@@ -14,7 +15,8 @@ const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 export default function AccountsScreen() {
-  const { data } = useLiveQuery(accountBalancesQuery());
+  const { currentLedgerId } = useCurrentLedger();
+  const { data } = useLiveQuery(accountBalancesQuery(), [currentLedgerId]);
   const rows = data ?? [];
   const total = rows.reduce((sum, r) => sum + r.balance, 0);
 
