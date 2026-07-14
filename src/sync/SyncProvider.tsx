@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { router } from 'expo-router';
+import { addDatabaseChangeListener } from 'expo-sqlite';
 import { AppState } from 'react-native';
 
 import { useSession } from '@/features/auth/AuthProvider';
@@ -17,6 +18,9 @@ import { generateDueTransactions } from '@/features/recurring/generate';
 import { nowISO } from '@/lib/dates';
 
 import { syncNow } from './engine';
+
+/** §6.2 — 마지막 쓰기 3~5초 후 자동 push (지금까지는 포그라운드/수동 트리거뿐이었다) */
+const WRITE_DEBOUNCE_MS = 4000;
 
 interface SyncContextValue {
   syncing: boolean;
@@ -90,6 +94,22 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     });
     return () => sub.remove();
   }, []);
+
+  // 쓰기 후 debounce push (§6.2) — pull이 sync_state/원격 반영으로 다시 이벤트를 일으켜도
+  // dirty 행이 없으면 다음 push는 그냥 아무것도 안 보내니 무해하다.
+  useEffect(() => {
+    if (!userId) return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const sub = addDatabaseChangeListener(({ tableName }) => {
+      if (tableName === 'sync_state') return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => void sync(), WRITE_DEBOUNCE_MS);
+    });
+    return () => {
+      if (timer) clearTimeout(timer);
+      sub.remove();
+    };
+  }, [userId, sync]);
 
   return (
     <SyncContext.Provider value={{ syncing, lastSyncedAt, error, sync }}>
