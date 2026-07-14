@@ -20,6 +20,12 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
+              name="capture"
+              options={{ presentation: 'modal', title: '캡처' }}
+            />
+            <Stack.Screen name="inbox/index" options={{ title: '수집함' }} />
+            <Stack.Screen name="inbox/[id]" options={{ title: '정리하기' }} />
+            <Stack.Screen
               name="transaction/new"
               options={{ presentation: 'modal', title: '거래 입력' }}
             />
